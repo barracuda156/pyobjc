@@ -1499,7 +1499,7 @@ typestr2typestr(PyObject* args)
     return result;
 }
 
-#if PyObjC_BUILD_RELEASE >= 1006
+#if PyObjC_BUILD_RELEASE >= 1006 && !defined(__ppc__)
 /* Associated Object support. Functionality is available on OSX 10.6 or later.
  */
 
@@ -1943,7 +1943,7 @@ static PyMethodDef mod_methods[] = {
      .ml_doc   = "_typestr2typestr(value)\n" CLINIC_SEP
                "\nReturns the standard Objective-C version for a PyObjC typestr"},
 
-#if PyObjC_BUILD_RELEASE >= 1006
+#if PyObjC_BUILD_RELEASE >= 1006 && !defined(__ppc__)
 
     {.ml_name  = "setAssociatedObject",
      .ml_meth  = (PyCFunction)PyObjC_setAssociatedObject,
@@ -2345,7 +2345,7 @@ PyObject* __attribute__((__visibility__("default"))) PyInit__objc(void)
 
     PyObjCPointerWrapper_Init();
 
-#if PyObjC_BUILD_RELEASE >= 1006
+#if PyObjC_BUILD_RELEASE >= 1006 && !defined(__ppc__)
 #if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6
     if (objc_setAssociatedObject != NULL) {
 #endif /* MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6 */
