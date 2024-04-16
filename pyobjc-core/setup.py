@@ -38,7 +38,8 @@ if sys.version_info < MIN_PYTHON:
 
 
 def get_os_level():
-    pl = plistlib.readPlist("/System/Library/CoreServices/SystemVersion.plist")
+    with open("/System/Library/CoreServices/SystemVersion.plist", "rb") as fp:
+        pl = plistlib.load(fp)
     v = pl["ProductVersion"]
     return ".".join(v.split(".")[:2])
 
@@ -47,11 +48,23 @@ def get_sdk_level(sdk):
     if sdk == "/":
         return get_os_level()
 
-    sdk = os.path.basename(sdk)
-    assert sdk.startswith("MacOSX")
-    assert sdk.endswith(".sdk")
-    sdk = sdk[6:-4]
-    return sdk
+    sdk = sdk.rstrip("/")
+    sdkname = os.path.basename(sdk)
+    assert sdkname.startswith("MacOSX")
+    assert sdkname.endswith(".sdk")
+
+    settings_path = os.path.join(sdk, "SDKSettings.plist")
+    if os.path.exists(settings_path):
+        try:
+            with open(os.path.join(sdk, "SDKSettings.plist"), "rb") as fp:
+                pl = plistlib.load(fp)
+            return pl["Version"]
+        except Exception:
+            raise SystemExit("Cannot determine SDK version")
+    else:
+        version_part = sdkname[6:-4]
+        assert version_part
+        return version_part
 
 
 # CFLAGS for the objc._objc extension:

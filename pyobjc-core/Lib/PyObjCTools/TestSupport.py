@@ -175,13 +175,11 @@ def os_release():
     if _os_release is not None:
         return _os_release
 
-    if hasattr(_pl, "load"):
-        with open("/System/Library/CoreServices/SystemVersion.plist", "rb") as fp:
-            pl = _pl.load(fp)
-    else:
-        pl = _pl.readPlist("/System/Library/CoreServices/SystemVersion.plist")
-    v = pl["ProductVersion"]
-    return ".".join(v.split("."))
+    _os_release = (
+        _subprocess.check_output(["sw_vers", "-productVersion"]).decode().strip()
+    )
+
+    return _os_release
 
 
 def is32Bit():
